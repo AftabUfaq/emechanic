@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "12974339871",
+    "firebase_url": "https://emechanic-d81b3.firebaseio.com",
+    "project_id": "emechanic-d81b3",
+    "storage_bucket": "emechanic-d81b3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:12974339871:android:39e17a7e50cd6b532be22a",
+        "android_client_info": {
+          "package_name": "com.emechanic"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "12974339871-o6k3abock8vg6vmflnemsgg2d89bjgvm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSwWH694zsQ4F7ySKjjmTLvy9hNfbnWTA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "12974339871-o6k3abock8vg6vmflnemsgg2d89bjgvm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
