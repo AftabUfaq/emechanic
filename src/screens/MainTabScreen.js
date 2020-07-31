@@ -4,6 +4,7 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { createStackNavigator } from '@react-navigation/stack';
 
 import Icon from 'react-native-vector-icons/Ionicons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 
 import HomeScreen from './DashBoard';
 import DetailsScreen from './NotificationsScreen';
@@ -72,10 +73,10 @@ const MainTabScreen = () => (
         name="Explore"
         component={ExploreStackScreen}
         options={{
-          tabBarLabel: 'Explore',
+          tabBarLabel: 'Donate',
           tabBarColor: '#009387',
           tabBarIcon: ({ color }) => (
-            <Icon name="ios-aperture" color={color} size={26} />
+            <FontAwesome5 name="hand-holding-usd" color={color} size={26} />
           ),
         }}
       />
@@ -108,6 +109,7 @@ const DetailsStackScreen = ({navigation}) => (
 const ExploreStackScreen = ({navigation}) => (
   <ExploreStack.Navigator screenOptions={myscreenoptions}>
           <ExploreStack.Screen name="Explore" component={ExploreScreen} options={{
+            title:"Chat",
           headerLeft: () => (
               <Icon.Button name="ios-menu" size={25} backgroundColor="#009387" onPress={() => navigation.openDrawer()}></Icon.Button>
           )

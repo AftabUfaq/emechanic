@@ -1,6 +1,5 @@
 import React, { useEffect, useContext } from 'react';
-import { View, } from 'react-native';
-
+import { View, NativeModules } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { 
@@ -20,15 +19,29 @@ import {
 } from 'react-native-paper';
 
 import { DrawerContent } from './src/screens/DrawerContent';
-import MainTabScreen from './src/screens/MainTabScreen';
-import SupportScreen from './src/screens/SupportScreen';
-import SettingsScreen from './src/screens/SettingsScreen';
-import BookMechanicScreen from './src/screens/BookMechanicScreen';
+
 import {Provider as AuthProvider } from './src/Context/AuthContext';
 import {Provider as ProblemProvider} from './src/Context/ProblemContext'
 import {Context as AuthContext} from './src/Context/AuthContext'
+import {Provider as ServiceProvider} from './src/Context/ServiceContext'
+import {Provider as BookingProvider} from './src/Context/BookingContext'
 import RootStackScreen from './src/screens/RootStackScreen';
+
+import MainTabScreen from './src/screens/MainTabScreen';
+import ChatScreen from './src/screens/ChatScreen';
+
 import AddProblemScreen from './src/screens/AddProblemScreen'
+import ShowProblemsScreen from './src/screens/ShowAllProblems'
+
+import BookMechanicScreen from './src/screens/BookMechanicScreen';
+import ShowAllBookings from './src/screens/ShowAllBookings'
+
+import AddServiceScreen from './src/screens/AddServiceScreen'
+import ShowAllServiceScreen from './src/screens/ShowAllServices'
+
+import FeedbackScreen from './src/screens/FeedbackScreen'
+
+
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -47,30 +60,53 @@ const Screens = ({navigation}) => (
   <Stack.Navigator screenOptions={myscreenoptions}>
            <Stack.Screen name="Home" component={MainTabScreen} options={{headerShown:false}} />
 
-          <Stack.Screen name="SupportScreen" component={SupportScreen} options={{
-              title:'Support Us',
+          <Stack.Screen name="ChatScreen" component={ChatScreen} options={{
+              title:'Chat With',
               headerLeft: () => (
                 <Icon.Button name="ios-menu" size={25} backgroundColor="#009387" onPress={() => navigation.openDrawer()}></Icon.Button>
+            ), 
+            headerRight:() =>(
+              <Icon.Button name="ios-call" size={25} backgroundColor="#009387" onPress={() => console.log('call')}></Icon.Button>
             )
              }} />
 
           <Stack.Screen name="AddProblemScreen" component={AddProblemScreen} options={{
               title:'Add Your Problem',
              }} />
-
+  
           <Stack.Screen name="BookMechanicScreen" component={BookMechanicScreen} options={{
               title:'Book Mecanic Here',
              }} />
+  
+          <Stack.Screen name="ShowProblemsScreen" component={ShowProblemsScreen} options={{
+              title:'Problems List',
+             }} />
+
+          <Stack.Screen name="ShowAllBookings" component={ShowAllBookings} options={{
+              title:'All Bookings Record',
+             }} />
+    
+          <Stack.Screen name="AddServiceScreen" component={AddServiceScreen} options={{
+              title:'Add Service',
+             }} />
+          <Stack.Screen name="ShowAllServiceScreen" component={ShowAllServiceScreen} options={{
+              title:'All Services',
+             }} />
+
+          <Stack.Screen name="FeedbackScreen" component={FeedbackScreen} options={{
+              title:'FeedBack',
+             }} />                   
+            
+                   
   </Stack.Navigator>
   );
   
 
 const App = () => {
+
     const {state,LocalSignIn} = useContext(AuthContext);
-//    console.log('App State',state);
-//  const [isDarkTheme, setIsDarkTheme] = React.useState(false);
-  const myscreenoptions = {
-    headerStyle: {
+    const myscreenoptions = {
+     headerStyle: {
       backgroundColor: '#009387',
       },
       headerTintColor: '#fff',
@@ -142,9 +178,13 @@ if(state.isLoading) {
 export default () => {
   
   return(
-      <ProblemProvider>  
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-      </ProblemProvider>
+    <ServiceProvider>
+      <BookingProvider>
+        <ProblemProvider>  
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </ProblemProvider>
+      </BookingProvider>  
+    </ServiceProvider>  
 )};

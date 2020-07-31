@@ -9,8 +9,10 @@ export function DrawerContent(props) {
     const paperTheme = useTheme();
     const {colors} = useTheme();
 
-    const { signOut, toggleTheme } = React.useContext(AuthContext);
-
+    const { state:{profiledata}, signOut, toggleTheme } = React.useContext(AuthContext);
+    const Capitalize = (str) => {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+        } 
     return(
         <View style={{flex:1}}>
             <DrawerContentScrollView {...props}>
@@ -18,18 +20,18 @@ export function DrawerContent(props) {
                     <View style={styles.userInfoSection}>
                         <View style={{flexDirection:'row',marginTop: 15}}>
                             <Avatar.Image 
-                                source={{
-                                    uri: 'https://api.adorable.io/avatars/50/abott@adorable.png'
+                                 source={{
+                                    uri:`${profiledata.photoURl}`
                                 }}
                                 size={70}
                             />
                             <View style={{marginLeft:15, flexDirection:'column'}}>
                                <View style ={{flexDirection:'row', justifyContent:'space-between'}}> 
-                                <Title style={styles.title}>Aftab Ufaq</Title>
+                                <Title style={styles.title}>{Capitalize(profiledata.name)}</Title>
                                 <Icon onPress={()=> alert("Eidt")} style={[styles.title,{marginTop:13, color:colors.text } ]} name="square-edit-outline" size={22} />
                                 </View>
-                                <Caption style={styles.caption}>engr.aftab@gmail.com</Caption>
-                                <Caption style={styles.caption}>03179608039</Caption>
+                               <Caption style={styles.caption}>{profiledata.email}</Caption>
+                                <Caption style={styles.caption}>{profiledata.phoneNumber}</Caption>
 
                             </View>
                         </View>
@@ -61,7 +63,7 @@ export function DrawerContent(props) {
                             label="Profile"
                             onPress={() => {props.navigation.navigate('Profile')}}
                         />
-                        {/* <DrawerItem 
+                         <DrawerItem 
                             icon={({color, size}) => (
                                 <Icon 
                                 name="bookmark-outline" 
@@ -69,30 +71,8 @@ export function DrawerContent(props) {
                                 size={size}
                                 />
                             )}
-                            label="Bookmarks"
-                            onPress={() => {props.navigation.navigate('BookmarkScreen')}}
-                        />
-                        <DrawerItem 
-                            icon={({color, size}) => (
-                                <Icon 
-                                name="settings-outline" 
-                                color={color}
-                                size={size}
-                                />
-                            )}
-                            label="Settings"
-                            onPress={() => {props.navigation.navigate('SettingsScreen')}}
-                        /> */}
-                        <DrawerItem 
-                            icon={({color, size}) => (
-                                <Icon 
-                                name="account-check-outline" 
-                                color={color}
-                                size={size}
-                                />
-                            )}
-                            label="Support Us"
-                            onPress={() => {props.navigation.navigate('SupportScreen')}}
+                            label="Feedback"
+                            onPress={() => {props.navigation.navigate('FeedbackScreen')}}
                         />
                     </Drawer.Section>
                     <Drawer.Section title="Preferences">

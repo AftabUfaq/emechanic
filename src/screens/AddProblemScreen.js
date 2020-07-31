@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { PermissionsAndroid, View, ScrollView, StatusBar, StyleSheet, Text, Platform, TouchableOpacity, ToastAndroid, Dimensions } from 'react-native';
 import MapView, { Marker } from  'react-native-maps';
 import * as Animatable from 'react-native-animatable';
 import LinearGradient from 'react-native-linear-gradient';
@@ -10,51 +10,167 @@ import { CircleFade } from 'react-native-animated-spinkit';
 import {Context as ProblemContext} from '../Context/ProblemContext'
 import RNPickerSelect from 'react-native-picker-select';
 import Ionicons from "react-native-vector-icons/Ionicons";
-const ProfileScreen = ({navigation}) => {
-const {state, addproblem, fetchservices} = useContext(ProblemContext);
+import Geolocation from 'react-native-geolocation-service';
+const ProfileScreen = ({navigation, route}) => {
+  const getdata = (type) =>{
+    if(route.params){
+       switch(type){
+         case "id":
+           return route.params.item.id;
+         case "problemDescription":
+           return route.params.item.problemDescription ;
+         case "problemTitle":
+           return route.params.item.problemTitle
+       }
+    }
+    return""
+ }
+
+  const [id , setId] = useState(getdata('id'))
+  const [problemTitle, setProblemTitle] = useState(getdata('problemTitle'))
+  const [problemDescription , setProblemDescription] =  useState(getdata('problemDescription'));
+
+ 
+//  const {id, problemDescription, problemTitle} = route.params.item ;
+  const {state, addproblem, fetchservices, updateproblem} = useContext(ProblemContext);
+
+const [problemdata,  setproblemData] = useState({
+  problemtitle:problemTitle,
+  isvalidProblemTitle:true,
+  proplemtitlerrormessage:"",
+  problemdescription:problemDescription,
+  isValidProblemDescription:true,
+  problemdescriptionerrormessage:'',
+  longitude:"",
+  latitude:""
+ });  
+
+const [region, setRegion] = useState({
+  latitude: 34.1200,
+  longitude: 72.4700,
+  latitudeDelta: 0.0922,
+  longitudeDelta: 0.0421,
+});
+//console.log('state',state)
+const hasLocationPermission = async () => {
+  if (Platform.OS === 'ios') {
+    const hasPermission = await this.hasLocationPermissionIOS();
+    return hasPermission;
+  }
+
+  if (Platform.OS === 'android' && Platform.Version < 23) {
+    return true;
+  }
+
+  const hasPermission = await PermissionsAndroid.check(
+    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+  );
+
+  if (hasPermission) {
+    return true;
+  }
+
+  const status = await PermissionsAndroid.request(
+    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+  );
+
+  if (status === PermissionsAndroid.RESULTS.GRANTED) {
+    return true;
+  }
+
+  if (status === PermissionsAndroid.RESULTS.DENIED) {
+    ToastAndroid.show(
+      'Location permission denied by user.',
+      ToastAndroid.LONG,
+    );
+  } else if (status === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+    ToastAndroid.show(
+      'Location permission revoked by user.',
+      ToastAndroid.LONG,
+    );
+  }
+
+  return false;
+};
+
+
 useEffect(() => {
+  if(hasLocationPermission()){
+  
   if(navigation.isFocused()){
+    Geolocation.getCurrentPosition((position) =>{
+      setproblemData({
+        ...problemdata,
+          latitude:position.coords.latitude,
+          longitude:position.coords.longitude,
+      })
+      setRegion({
+        latitude:position.coords.latitude,
+        longitude:position.coords.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      
+      })
+    },(error) => {
+      ToastAndroid.showWithGravityAndOffset(
+        "Plase Enable Location",
+        ToastAndroid.LONG,
+        ToastAndroid.BOTTOM,
+        25,
+        50
+      );
+      
+    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 })
     fetchservices();
   }
-},[]) 
-console.log(state);
-const [problemdata,  setproblemData] = useState({
-      problemtitle:"",
-      isvalidProblemTitle:true,
-      proplemtitlerrormessage:"",
-      problemdescription:'',
-      isValidProblemDescription:true,
-      problemdescriptionerrormessage:'',
-      location:{
-        latitude:'',
-        longitude:''
-      },
-      loading:false
-     });
-
+} 
+}
+,[]) 
   const { colors } = useTheme();   
-
-  const namehandler = () =>{
-
-  }
+  
+  const descriptionhandler = (val) =>{
+    if(val.trim().length <=20){
+      setproblemData({
+        ...problemdata,
+        problemdescription:val,
+        isValidProblemDescription:false,
+        problemdescriptionerrormessage:"Please Enter At least 20 Characters To Full Describe you Problem"
+      })
+    }else{
+      setproblemData({
+        ...problemdata,
+        problemdescription:val,
+        isValidProblemDescription:true,
+        problemdescriptionerrormessage:""
+      })
+    }
+         
+    }
   const sumbitProblem = () =>{
-
-    setTimeout(() => {
-    setproblemData({
-      ...problemdata,
-      loading:false
-    })
-   }, 1000)
-   setproblemData({
-    ...problemdata,
-    loading:true
-  })  
+    if(problemdata.problemtitle === ''){
+      setproblemData({
+        ...problemdata,
+        isvalidProblemTitle:false,
+        proplemtitlerrormessage:"Please elect Problem Title"
+      })
+      return ;
+    }
+    else if(!(problemdata.isValidProblemDescription)){
+      setproblemData({
+        ...problemdata,
+        isValidProblemDescription:false,
+        problemdescriptionerrormessage:"Please Enter At least 20 Characters To Full Describe you Problem"
+      })
+      return ;
+    }
+//      console.log('here it is in AddProblem Screen ',problemdata.latitude, problemdata.longitude)
+    addproblem(problemdata.problemtitle, problemdata.problemdescription, problemdata.latitude,problemdata.longitude);
   }
-  if(state.services === ''){
+  if(state.loading){
     return(
       <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
         <CircleFade size={48} color={colors.menuitemcolor}/>
-        <Text style ={{color:colors.menuitemcolor}}>Please wait Your Problem  is Sharing</Text>
+        <Text style ={{color:colors.menuitemcolor}}>Please wait...</Text>
       </View>
     )
   }
@@ -68,14 +184,10 @@ const [problemdata,  setproblemData] = useState({
         
         <View  style ={{ width:'100%', height:180, overflow: 'hidden' ,borderBottomLeftRadius:10, borderBottomRightRadius:10,}}> 
           <MapView
-              initialRegion={{
-              latitude: 34.12000,
-              longitude: 72.470000,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-                }} 
-             showsUserLocation
-             style ={{width:'100%', height: 100, flex:1}}    
+              region={region}
+              initialRegion={region}
+              showsUserLocation = {true}
+              style ={{width:'100%', height: 100, flex:1}}    
           />       
         </View>
 
@@ -83,6 +195,7 @@ const [problemdata,  setproblemData] = useState({
           animation="zoomInUp"
           direction="alternate"
           style={[styles.footer, {
+            height:Dimensions.get('screen').height,
             backgroundColor: colors.background,
             borderTopLeftRadius:10,
             borderTopRightRadius:10,
@@ -98,7 +211,7 @@ const [problemdata,  setproblemData] = useState({
 
                       }}
                         value={problemdata.problemtitle}
-                        onValueChange={(value) =>setproblemData({...state, problemtitle:value})}
+                        onValueChange={(value) =>setproblemData({...problemdata, problemtitle:value})}
                         items={state.services}
                        
                           style={{
@@ -139,13 +252,23 @@ const [problemdata,  setproblemData] = useState({
               value={problemdata.problemdescription}
               isvalid = {problemdata.isValidProblemDescription} 
               errormessage={problemdata.problemdescriptionerrormessage}
-              textInputChange={namehandler}
+              textInputChange={descriptionhandler}
               keyboardtype ="default"
-            //  lenght={15}
-              numberofline= {3}
+              numberofline= {2}
           />   
-
-                <TouchableOpacity
+           {id?<TouchableOpacity
+                    style={styles.signIn}
+                     onPress= {() => updateproblem(id, problemdata.problemtitle, problemdata.problemdescription, problemdata.latitude,problemdata.longitude)}
+                >
+                <LinearGradient
+                    colors={['#08d4c4', '#01ab9d']}
+                    style={styles.signIn}
+                >
+                    <Text style={[styles.textSign, {
+                        color:'#fff'
+                    }]}>Update</Text>
+                </LinearGradient>
+                </TouchableOpacity>:<TouchableOpacity
                     style={styles.signIn}
                      onPress= {() => sumbitProblem()}
                 >
@@ -157,11 +280,8 @@ const [problemdata,  setproblemData] = useState({
                         color:'#fff'
                     }]}>Share Now</Text>
                 </LinearGradient>
-                </TouchableOpacity>
-
-    
- 
-
+                </TouchableOpacity>}   
+                
       </Animatable.View>
       </ScrollView>
       </View>

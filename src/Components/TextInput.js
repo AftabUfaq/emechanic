@@ -17,6 +17,7 @@ return (
                     name={props.lefticonname}
                     color={colors.text}
                     size={20}
+                    style={{alignSelf:'center'}}
                 />: null} 
               
                 <TextInput 
@@ -25,7 +26,9 @@ return (
                     placeholder={props.placeholdertext}
                     placeholderTextColor={colors.placeholdertextcolor}
                     style={[styles.textInput, {
-                        color: colors.text
+                        color: colors.text,
+                        marginTop:0,
+                        textAlign:'justify',
                     }]}
                     multiline={true}
                     numberOfLines={props.numberofline}

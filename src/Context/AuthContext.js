@@ -87,6 +87,11 @@ const authReducer = (state, action) => {
             profiledata:action.payload,
             isauthenticating:false
           }
+       case "BACKGROUNDTASK":
+         return{
+           ...state,
+           heartbeat:action.payload
+         }   
       default:
         return state  
     }
@@ -123,7 +128,7 @@ const authReducer = (state, action) => {
               dispatch({type:'ACCOUNT_TYPE', payload:accounttype});
               dispatch({type:"SETPROFILEDATA", payload:profiledata.toJSON()})    
             }else{
-              dispatch({type:"ADD_ERROR", payload:"Invaild Accounttype Selected, Pleae Signup with another Account"})
+              dispatch({type:"ADD_ERROR", payload:"Invaild Accounttype Selected, Please Signup with another Account"})
             }
       }).catch(error =>{
         dispatch({type:"ADD_ERROR", payload:error.message})
@@ -214,14 +219,18 @@ const authReducer = (state, action) => {
     } 
     firebase.database().ref('users/' + userinfo.uid).set(profiledata, async function(error){
       if(error){
-      dispatch({type:"ADD_ERROR", payload:"Some thng Went Wrong while updateing your Profile"})
-    }else{
+    dispatch({type:"ADD_ERROR", payload:"Some thng Went Wrong while updateing your Profile"})
+    }else{      
           dispatch({type:"SETPROFILEDATA", payload:profiledata})
             await AsyncStorage.setItem('@profiledata', JSON.stringify(profiledata));
             Geolocation.getCurrentPosition((position) => {
               firebase.database().ref('locations/' + userinfo.uid).set({
                   type:accounttype,
                   position:position
+              }).then(() =>{
+
+              }).catch(() => {
+                dispatch({type:"ADD_ERROR", payload:"Some thng Went Wrong while updateing your Profile"})
               })
               },
                (error) => {
@@ -256,9 +265,13 @@ const uploaduserimage = dispatch => (imageuri) =>{
     );
 }
 
+
+const setbackgroundtask = dispatch =>(val) =>{
+  dispatch({type:'BACKGROUNDTASK', payload:val})
+}
 export const {Provider, Context } = createDataContext(
     authReducer,
-    {uploaduserimage, signIn, signOut, signUp,  LocalSignIn, toggleTheme, selectaccount, completeprofile, clearerrormessage }, 
+    {uploaduserimage, setbackgroundtask, signIn, signOut, signUp,  LocalSignIn, toggleTheme, selectaccount, completeprofile, clearerrormessage }, 
     { isauthenticating:false, userName: null,userToken: null,isLoading:true, isDarkTheme:false, accounttype:null, 
-      errormessage:"", imageuri:"", imageuploadprogress:0, profiledata:null, }
+      errormessage:"",heartbeat:false, imageuri:"", imageuploadprogress:0, profiledata:null, }
     );

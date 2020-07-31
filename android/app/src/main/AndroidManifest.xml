@@ -7,7 +7,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
-  
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <application
       android:name=".MainApplication"
@@ -27,6 +29,24 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
+       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+        <service
+            android:name="com.emechanic.HeartbeartService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
+        <service
+            android:name="com.emechanic.HeartbeatEventService">
+        </service>
+        <receiver
+            android:name="com.emechanic.BootUpReceiver"
+            android:enabled="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
 
        <meta-data
         android:name="com.google.firebase.messaging.default_notification_icon"

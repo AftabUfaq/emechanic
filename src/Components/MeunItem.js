@@ -9,6 +9,7 @@ const MenuItem = (props) => {
   const { colors } = useTheme();
     return (     
          <Animatable.View 
+         style={{alignItems:'center', alignContent:'center'}}
          animation="fadeInUp" iterationCount={1}
          >
           <TouchableOpacity
@@ -28,11 +29,13 @@ const MenuItem = (props) => {
               <MaterialIcons
                 name ={props.icon}
                 style={{ 
-                width: 60,
-                height: 60,
+                width: 70,
+                backgroundColor:"pink",
+                borderRadius:50,
+                height: 70,
                 zIndex: 1,
                 marginTop:20,
-                marginLeft:23,
+                marginLeft:25,
                 fontSize:70,
                 fontWeight:'bold',
                 color:colors.menuitemcolor

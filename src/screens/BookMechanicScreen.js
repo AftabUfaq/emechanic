@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
-import { View, StatusBar, Modal} from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, StatusBar, Modal, ToastAndroid} from 'react-native';
 import MapView, { Marker } from  'react-native-maps';
 import  styles  from  './Styles/authstyles';
 import MechanicInformation from '../Components/MechnicInformation'
-import LinearGradient from 'react-native-linear-gradient';
+import {Context as BookingContext} from '../Context/BookingContext'
 const BookMechanicScreen = () => {
+  const {state, mechanchicdetails, fecthservices, fetchmechanics} = useContext(BookingContext)
+  useEffect(() =>{
+    fetchmechanics();
+  }, [])
+  const getmechnicdata = (id) =>{
+     mechanchicdetails(id),
+     fecthservices(id);
+       setModal(true);
+  }
+
   const [modal,setModal] = useState(false);
+  
   const [visible, setVisible] = useState(false)
     return (
       <View style={styles.container}>
        <StatusBar backgroundColor='#009387' barStyle="light-content"/>
+      
         <MapView 
           initialRegion={{
             latitude: 34.253000,
@@ -26,30 +38,18 @@ const BookMechanicScreen = () => {
               showsPointsOfInterest = {false}  
            style ={{width:'100%', height:'100%',}} 
         >
-            <Marker
-              onPress ={() =>setModal(true)}
-              coordinate={{ 
-              latitude:34.2530,
-              longitude:72.3489,
-              }} />
-
-            <Marker
-              coordinate={{ 
-              latitude:34.2530,
-              longitude:72.3996,
-              }} />  
-
+            {state.mechanicsarray.map(marker => (
               <Marker
-              coordinate={{ 
-              latitude:34.2953,
-              longitude:72.3496,
-              }} />
-
-             <Marker
-              coordinate={{ 
-              latitude:34.2953,
-              longitude:72.3996,
-              }} />
+                key={marker.key}
+                coordinate={{ 
+                    latitude: marker.latitude,
+                    longitude:marker.longitude,
+                          }}
+                    onPress = {() => getmechnicdata(marker.key)}                      
+                    title={'click to show details'}
+                    description={'He is a 5 star rated Mechanic'}
+              />))}
+      
         </MapView>
 
         <Modal
@@ -61,7 +61,20 @@ const BookMechanicScreen = () => {
           onRequestClose={()=>{
           setModal(false)
           }}>
-          <MechanicInformation />
+            
+          <MechanicInformation
+              name={state.mechanicdata.name}
+              email ={state.mechanicdata.email}
+              cnic={state.mechanicdata.cnic}
+              photoURl ={state.mechanicdata.photoURl}
+              phoneNumber ={state.mechanicdata.phoneNumber}
+              role={state.mechanicdata.role}
+              FCM={state.mechanicdata.FCM}
+              address={state.mechanicdata.address}
+              uid ={state.mechanicdata.uid}
+              services = {state.services}
+              closeview={() => setModal(false)} 
+          />
          </Modal>
       </View>
     );

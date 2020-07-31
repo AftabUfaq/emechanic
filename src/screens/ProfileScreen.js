@@ -9,7 +9,6 @@ import { useTheme ,} from '@react-navigation/native';
 import styles from './Styles/authstyles'
 import { AirbnbRating } from 'react-native-ratings';
 import {Context as AuthContext } from '../Context/AuthContext';
-import { create } from 'react-test-renderer';
 const ProfileScreen = ({navigation}) => {
     const [modal,setModal] = useState(false);
     const {state} = React.useContext(AuthContext);
@@ -39,18 +38,20 @@ const ProfileScreen = ({navigation}) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
     }    
     return (
-        <View style={{flex:1}}>
-        <LinearGradient
-         colors={[colors.background,colors.background]}
-         style={{height:"100%",}}
-         >
-                    <View style={{height:185}}>
-                        <View style={{flexDirection:'column',marginTop:10,  alignItems:'center'}}>
-                            <Image 
+        <View style={{flex:1 , backgroundColor:'transparent'}}>
+           <LinearGradient
+             colors={[colors.background,colors.background]}
+             style={{height:"100%", flex:1,}}
+            >
+               <ScrollView style={{ paddingTop:10,marginHorizontal:0, borderRadius:0,marginBottom:0, overflow:'hidden' }}
+                    showsHorizontalScrollIndicator={false}
+                    showsVerticalScrollIndicator={false}
+                    > 
+                     <Image 
                                 source={{
                                     uri:`${state.profiledata.photoURl}`
                                 }}
-                                style={{width:100, height:100, borderRadius:10,borderColor:'#009387', borderWidth:2,}}
+                                style={{width:150, height:150, alignSelf:'center', borderRadius:100,borderColor:'#009387', borderWidth:0,shadowColor:colors.text}}
                             />
                             <View style={{marginLeft:0, flexDirection:'column'}}>
                                 <Title style={{color:colors.text, textAlign:"center", fontWeight:"bold"}}>{Capitalize(state.profiledata.name)}</Title>
@@ -69,18 +70,7 @@ const ProfileScreen = ({navigation}) => {
                                    />
                                 <Text style ={{color:'#f1c40f', textAlign:'center'}}>(15 Reviews)</Text> 
                             </View>
-                        </View>
-                    </View>
-
-
-                    <ScrollView style={{marginHorizontal:0, borderRadius:0,marginBottom:0, overflow:'hidden' }}
-                    showsHorizontalScrollIndicator={false}
-                    showsVerticalScrollIndicator={false}
-                    >
-                     <LinearGradient colors={['#3fd1c0','#009387' ]} 
-                          start={{x: 0.2, y: 0.0}} end={{x: 0.6, y: 0.9}}
-                          locations={[0.45,0.76]}
-                       style ={{borderRadius:10}}>
+                 
  
                        <TouchableOpacity style={styles.mycard} onPress={()=>{
                            Linking.openURL(`mailto:${state.profiledata.email}`).catch(error =>{
@@ -114,15 +104,15 @@ const ProfileScreen = ({navigation}) => {
 
                     <TouchableOpacity style={styles.mycard}>
                         <View style={styles.cardContent}>
-                          <FontAwesome name="id-card-o" size={13} color={colors.text} style={styles.profileicon}/>
+                          <FontAwesome name="id-card-o" size={22} color={colors.text} style={styles.profileicon}/>
                           <View style={{flexDirection:"column", marginLeft:'2%'}}>
                             <Text style={[styles.mytext, {color:colors.text,  textDecorationLine:"underline",}]}>CNIC</Text>
-                            <Text style={styles.mytext}>{state.profiledata.phoneNumber}</Text>
+                            <Text style={styles.mytext}>{state.profiledata.cnic}</Text>
                           </View>
                         </View>
                     </TouchableOpacity>
                     
-                    <TouchableOpacity style={styles.mycard}>
+                    <TouchableOpacity style={[styles.mycard, {paddingBottom:20,}]}>
                         <View style={styles.cardContent}>
                           <MaterialIcons name="location-on" size={22} color={colors.text} style={styles.profileicon}/>
                           <View style={{flexDirection:"column", marginLeft:'2%'}}>
@@ -130,39 +120,7 @@ const ProfileScreen = ({navigation}) => {
                             <Text style={styles.mytext}>{state.profiledata.address}</Text>
                           </View>
                         </View>
-                    </TouchableOpacity>
-                    {state.accounttype === "Mechanic"?
-                <View>
-                 <View  style={{justifyContent:'space-around', padding:10}}>  
-                     <Button 
-                          icon="account-edit"
-                          mode="contained"
-                          theme={theme}
-                          >
-                          Services
-                        </Button>
-    
-                  </View>
-                
-                    <View style={{flexDirection:"row",justifyContent:"space-around",padding:10}}>
-                        <Button 
-                          icon="account-edit"
-                          mode="contained"
-                          theme={theme}
-                          >
-                          Close
-                        </Button>
-                            
-                        <Button 
-                          icon="delete"
-                          mode="contained"
-                          theme={theme}>
-                            Book
-                        </Button>        
-                    </View>
-                 </View>   
-                :null}
-               </LinearGradient> 
+                    </TouchableOpacity>           
               </ScrollView>                       
             </LinearGradient>
         </View>
